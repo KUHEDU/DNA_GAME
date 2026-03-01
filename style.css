@@ -63,7 +63,7 @@ h1, h2 { text-align: center; }
 hr { border: 0.5px solid #444c56; margin: 15px 0; }
 
 /* ==========================================
-   🏥 [애니메이션 정의] 황금빛 숨쉬기 효과 (위로 끌어올림)
+   🏥 [애니메이션 정의] 황금빛 숨쉬기 효과
    ========================================== */
 @keyframes goldenGlow {
     0% {
@@ -103,15 +103,9 @@ hr { border: 0.5px solid #444c56; margin: 15px 0; }
 .story-box.clear-mode {
     background-color: rgba(0, 0, 0, 0.1) !important; 
     backdrop-filter: blur(3px) !important; 
-    
-    /* 기존 테두리 흔적 제거 */
     border-left: none !important; 
-    
-    /* 🔥 황금빛 외곽선 효과 추가 */
     border: 2px solid #ffd700 !important; 
     border-radius: 8px; 
-    
-    /* 🔥 빛나는 애니메이션 적용 */
     animation: goldenGlow 2s infinite ease-in-out; 
 }
 
@@ -166,7 +160,6 @@ input[type="text"]:focus { outline: none; border-color: #58a6ff; }
 .hint-btn { background-color: #21262d; border: 1px solid #444c56; white-space: nowrap; }
 .hint-btn:hover { background-color: #30363d; }
 
-/* 메시지 및 힌트 */
 #message-text { text-align: center; margin-top: 10px; font-weight: bold; min-height: 20px;}
 #message-text.error { color: #ff7b72; animation: shake 0.3s; }
 
@@ -200,14 +193,12 @@ input[type="text"]:focus { outline: none; border-color: #58a6ff; }
 #popup-keyword { font-weight: bold; font-size: 1.2rem; color: #0550ae; margin: 15px 0; }
 #popup-text { font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap; color: #333; text-align: left; }
 
-/* 에러 애니메이션 */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
 }
 
-/* 엔딩 효과 */
 .sacred-halo {
     position: fixed;
     top: 50%; left: 50%;
@@ -220,9 +211,7 @@ input[type="text"]:focus { outline: none; border-color: #58a6ff; }
     mix-blend-mode: screen;
 }
 
-.animate-halo {
-    animation: divineLight 3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
+.animate-halo { animation: divineLight 3s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 
 @keyframes divineLight {
     0% { transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
@@ -232,10 +221,31 @@ input[type="text"]:focus { outline: none; border-color: #58a6ff; }
 }
 
 /* ==========================================
-   📱 모바일 디바이스 최적화 (항상 맨 아래에 위치해야 함!)
+   📸 AR 스캐너 전용 UI 스타일
+   ========================================== */
+#ar-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    display: none; z-index: 1000; background: #000;
+}
+.ar-ui-top {
+    position: absolute; top: 20px; width: 100%; text-align: center;
+    color: #ffd700; z-index: 1001; font-weight: bold; text-shadow: 0 0 10px #000; font-size: 1.1rem;
+}
+.ar-close-btn {
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+    z-index: 1001; padding: 15px 30px; background: #da3633; color: #fff;
+    border: 2px solid #fff; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+.scan-guide-box {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 280px; height: 380px; border: 3px dashed rgba(255, 215, 0, 0.8);
+    pointer-events: none; z-index: 1001; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3) inset;
+}
+
+/* ==========================================
+   📱 모바일 디바이스 최적화 (항상 맨 아래에 위치!)
    ========================================== */
 @media (max-width: 480px) {
-    /* width를 75%로 줄여 양옆으로 배경화면이 시원하게 보이도록 수정 */
     .game-container { width: 75%; padding: 20px 15px; }
     #hospital-logo { font-size: 1.1rem; }
     #stage-title { font-size: 0.85rem; }
