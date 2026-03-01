@@ -1,4 +1,4 @@
-// 💡 구글 시트 데이터 주소 (TSV 형식으로 변환됨)
+// 💡 구글 시트 데이터 주소 (TSV 형식)
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAxmMvkbM1UubK3_JGGG9wKCD0pajse0_PA1fQhUjuFYhzkm86EvTHUV5gjVlkRkk0PU8F1_h9kJln/pub?gid=0&single=true&output=tsv';
 
 const introScreen = document.getElementById('intro-screen');
@@ -15,22 +15,22 @@ const successPopup = document.getElementById('success-popup');
 const popupKeyword = document.getElementById('popup-keyword');
 const popupText = document.getElementById('popup-text');
 
-// 게임 데이터를 담을 빈 배열
 let gameData = [];
 let currentStageIndex = 0;
 
-// 💡 구글 시트에서 데이터 불러오기 함수
+// 💡 구글 시트에서 데이터 불러오기 함수 (캐시 방지 로직 포함)
 async function fetchGameData() {
     try {
-        const response = await fetch(SHEET_URL);
+        const cacheBuster = `&t=${new Date().getTime()}`;
+        const response = await fetch(SHEET_URL + cacheBuster);
         const data = await response.text();
         
         const rows = data.split('\n');
         const headers = rows[0].split('\t').map(header => header.trim());
 
-        gameData = []; // 초기화
+        gameData = []; 
         for (let i = 1; i < rows.length; i++) {
-            if (!rows[i].trim()) continue; // 빈 줄 무시
+            if (!rows[i].trim()) continue; 
             const values = rows[i].split('\t');
             let stageObj = {};
             for (let j = 0; j < headers.length; j++) {
@@ -45,15 +45,13 @@ async function fetchGameData() {
     }
 }
 
-// 배경 이미지 변경 함수
 function changeBackground(imageName) {
     document.body.style.backgroundImage = `url('${imageName}')`;
 }
 
-// 처음 웹페이지 로드 시 배경 설정 및 데이터 불러오기 시작
 window.onload = function() {
     changeBackground('bg_intro.png');
-    fetchGameData(); // 💡 웹페이지가 켜지자마자 엑셀 데이터 가져오기
+    fetchGameData(); 
 };
 
 function showWorldview() {
@@ -63,7 +61,6 @@ function showWorldview() {
 }
 
 function startGame() {
-    // 💡 데이터 로딩이 안 끝났을 경우 방어
     if (gameData.length === 0) {
         alert("데이터를 불러오는 중입니다. 1~2초 후 다시 눌러주세요.");
         return;
@@ -75,36 +72,55 @@ function startGame() {
 
 function loadStage() {
     const storyBox = document.querySelector('.story-box');
-    
-    // 🌟 마지막 스테이지 클리어 처리
-    if (currentStageIndex >= gameData.length) {
-        titleEl.innerHTML = "MISSION CLEAR<br><span class='stage-subtitle'>인류의 구원</span>";
-        descEl.innerHTML = "<br><br><b>[작전 종료]</b><br><br>당신과 건국대학교병원 생존자들의 헌신으로 마침내 완벽한 치료제가 완성되었습니다.<br><br>5가지 핵심 가치를 모두 증명해 낸 당신의 리더십이 인류를 구했습니다.<br><br>수고하셨습니다, 요원님.";
-        
-        // 투명도 모드 활성화
+    const stage = gameData[currentStageIndex];
+
+    // 🌟 [엔딩 로직] 마지막 행일 때
+    if (currentStageIndex === gameData.length - 1) {
+        const titleParts = stage.title.split(':');
+        titleEl.innerHTML = titleParts.length > 1 
+            ? `${titleParts[0]}<br><span class="stage-subtitle">${titleParts[1].trim()}</span>` 
+            : stage.title;
+        descEl.innerHTML = stage.desc;
+
+        // 🔥 [절대 실패하지 않는 UI 숨김 코드]
+        // 정답 입력칸과 버튼을 감싸고 있는 전체 부모 박스를 추적해서 강제로 없앱니다.
+        if (inputEl && inputEl.parentElement) {
+            inputEl.parentElement.style.display = 'none'; 
+        }
+        if (hintBoxEl) {
+            hintBoxEl.style.display = 'none'; 
+        }
+
+        // 💡 엔딩 페이지 투명도 극대화 
         storyBox.classList.add('clear-mode');
-        
-        document.querySelector('.input-section').style.display = 'none';
-        hintBoxEl.classList.add('hidden');
-        
-        changeBackground('bg_clear.png');
+        storyBox.style.backgroundColor = "rgba(0, 0, 0, 0.2)"; 
+        storyBox.style.boxShadow = "none"; 
+
+        const bgImage = stage.bgClass ? `${stage.bgClass}.png` : 'bg_clear.png';
+        changeBackground(bgImage);
         showSacredEffect(); 
         return;
     }
 
-    // 일반 스테이지 로드 시 (투명도 모드 제거)
+    // 🌟 [일반 스테이지 로직]
     storyBox.classList.remove('clear-mode');
-
-    const stage = gameData[currentStageIndex];
     
-    // 제목과 부제목 분리 디자인
-    const titleParts = stage.title.split(':');
-    if (titleParts.length > 1) {
-        titleEl.innerHTML = `${titleParts[0]}<br><span class="stage-subtitle">${titleParts[1].trim()}</span>`;
-    } else {
-        titleEl.innerHTML = stage.title;
+    // 숨겼던 UI 다시 살리기
+    if (inputEl && inputEl.parentElement) {
+        inputEl.parentElement.style.display = 'flex'; 
+    }
+    if (hintBoxEl) {
+        hintBoxEl.style.display = ''; 
     }
 
+    // 박스 디자인 복구
+    storyBox.style.backgroundColor = ""; 
+    storyBox.style.boxShadow = "";
+
+    const titleParts = stage.title.split(':');
+    titleEl.innerHTML = titleParts.length > 1 
+        ? `${titleParts[0]}<br><span class="stage-subtitle">${titleParts[1].trim()}</span>` 
+        : stage.title;
     descEl.innerHTML = stage.desc;
     
     inputEl.value = "";
@@ -112,7 +128,6 @@ function loadStage() {
     messageEl.className = "";
     hintBoxEl.classList.add('hidden');
     
-    // bgClass가 시트에 정의되어 있으면 그것을 쓰고, 없으면 기존 규칙(bg_stageX) 사용
     const bgImage = stage.bgClass ? `${stage.bgClass}.png` : `bg_stage${currentStageIndex + 1}.png`;
     changeBackground(bgImage);
 }
@@ -123,11 +138,8 @@ function checkAnswer() {
 
     if (userInput === stage.answer) {
         popupKeyword.innerText = `[핵심가치: ${stage.keyword}] 획득!`;
-        // 💡 innerHTML로 변경하여 <br> 태그가 적용되도록 수정
         popupText.innerHTML = stage.clearText;
-        
         successPopup.classList.remove('hidden'); 
-        
     } else {
         messageEl.innerText = "❌ 치명적 오류: 코드가 일치하지 않습니다.";
         messageEl.className = "error";
@@ -146,13 +158,9 @@ function showHint() {
     hintBoxEl.classList.remove('hidden');
 }
 
-// 🏥 성스럽고 권위 있는 엔딩 효과 (Sacred Halo)
 function showSacredEffect() {
     const halo = document.createElement('div');
     halo.className = 'sacred-halo animate-halo'; 
     document.body.appendChild(halo);
-    
-    setTimeout(() => {
-        halo.remove();
-    }, 3000);
+    setTimeout(() => { halo.remove(); }, 3000);
 }
