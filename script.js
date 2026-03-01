@@ -4,13 +4,11 @@ const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAxmMvkbM1Uu
 const introScreen = document.getElementById('intro-screen');
 const worldviewScreen = document.getElementById('worldview-screen');
 const gameScreen = document.getElementById('game-screen');
-
 const titleEl = document.getElementById('stage-title');
 const descEl = document.getElementById('stage-desc');
 const inputEl = document.getElementById('answer-input');
 const messageEl = document.getElementById('message-text');
 const hintBoxEl = document.getElementById('hint-box');
-
 const successPopup = document.getElementById('success-popup');
 const popupKeyword = document.getElementById('popup-keyword');
 const popupText = document.getElementById('popup-text');
@@ -18,13 +16,11 @@ const popupText = document.getElementById('popup-text');
 let gameData = [];
 let currentStageIndex = 0;
 
-// 💡 구글 시트에서 데이터 불러오기
 async function fetchGameData() {
     try {
         const cacheBuster = `&t=${new Date().getTime()}`;
         const response = await fetch(SHEET_URL + cacheBuster);
         const data = await response.text();
-        
         const rows = data.split('\n');
         const headers = rows[0].split('\t').map(header => header.trim());
 
@@ -41,7 +37,6 @@ async function fetchGameData() {
         console.log("시트 연동 완료!", gameData);
     } catch (error) {
         console.error("데이터 연동 실패:", error);
-        alert("게임 데이터를 불러오지 못했습니다. 인터넷 연결을 확인하세요.");
     }
 }
 
@@ -53,12 +48,12 @@ window.onload = function() {
     changeBackground('bg_intro.png');
     fetchGameData(); 
 
-    // AR 마커 인식 이벤트 리스너 등록
-    window.addEventListener('nft-found', function() {
-        alert("🎉 설립자의 유산이 스캔되었습니다! 힌트를 확인하세요.");
-        // 자동으로 입력칸에 어떤 단어를 채워줄 수도 있습니다.
-        // inputEl.value = "FOUNDER";
-        stopARScan();
+    // 💡 무전기 수신 대기: 격리실(scanner.html)에서 정답을 찾았다고 연락이 오면!
+    window.addEventListener('message', function(event) {
+        if (event.data === 'AR_FOUND') {
+            alert("🎉 설립자의 유산이 스캔되었습니다! 힌트를 확인하세요.");
+            stopARScan(); // 카메라 방을 부숴서 완전히 끕니다.
+        }
     });
 };
 
@@ -68,16 +63,10 @@ function showWorldview() {
     changeBackground('bg_default.png'); 
 }
 
-// 💡 미션 시작 전 암호를 확인하는 함수 (0303)
 function checkMissionCode() {
-    if (gameData.length === 0) {
-        alert("데이터를 불러오는 중입니다. 잠시만 기다려주세요.");
-        return;
-    }
-
+    if (gameData.length === 0) return;
     const inputCode = document.getElementById('mission-code-input').value.trim();
     const errorText = document.getElementById('mission-error-text');
-
     const requiredCode = gameData[0].missionCode ? gameData[0].missionCode.toString().trim() : "0303";
 
     if (inputCode === requiredCode) {
@@ -86,7 +75,6 @@ function checkMissionCode() {
     } else {
         errorText.innerText = "❌ 접근 거부: 잘못된 미션 코드입니다.";
         errorText.style.color = "#ff7b72";
-        
         errorText.style.animation = "none";
         setTimeout(() => { errorText.style.animation = "shake 0.3s"; }, 10);
     }
@@ -103,75 +91,51 @@ function loadStage() {
     const arBtn = document.getElementById('ar-scan-btn');
     const stage = gameData[currentStageIndex];
 
-    // 🌟 [추가] 4단계 (배열 인덱스 3)일 때만 AR 스캔 버튼 보이기
-    if (currentStageIndex === 3) {
-        arBtn.classList.remove('hidden');
-    } else {
-        arBtn.classList.add('hidden');
-    }
+    // 🌟 4단계(배열 3)에서만 버튼 등장
+    if (currentStageIndex === 3) arBtn.classList.remove('hidden');
+    else arBtn.classList.add('hidden');
 
-    // 🌟 [엔딩 로직] 마지막 행일 때
     if (currentStageIndex === gameData.length - 1) {
         const titleParts = stage.title.split(':');
-        titleEl.innerHTML = titleParts.length > 1 
-            ? `${titleParts[0]}<br><span class="stage-subtitle">${titleParts[1].trim()}</span>` 
-            : stage.title;
+        titleEl.innerHTML = titleParts.length > 1 ? `${titleParts[0]}<br><span class="stage-subtitle">${titleParts[1].trim()}</span>` : stage.title;
         descEl.innerHTML = stage.desc;
-
         if (inputEl && inputEl.parentElement) inputEl.parentElement.style.display = 'none'; 
         if (hintBoxEl) hintBoxEl.style.display = 'none'; 
-
         storyBox.classList.add('clear-mode');
-
-        const bgImage = stage.bgClass ? `${stage.bgClass}.png` : 'bg_clear.png';
-        changeBackground(bgImage);
+        changeBackground(stage.bgClass ? `${stage.bgClass}.png` : 'bg_clear.png');
         showSacredEffect(); 
         return;
     }
 
-    // 🌟 [일반 스테이지 로직]
     storyBox.classList.remove('clear-mode'); 
-    
     if (inputEl && inputEl.parentElement) inputEl.parentElement.style.display = 'flex'; 
     if (hintBoxEl) hintBoxEl.style.display = ''; 
 
     const titleParts = stage.title.split(':');
-    titleEl.innerHTML = titleParts.length > 1 
-        ? `${titleParts[0]}<br><span class="stage-subtitle">${titleParts[1].trim()}</span>` 
-        : stage.title;
+    titleEl.innerHTML = titleParts.length > 1 ? `${titleParts[0]}<br><span class="stage-subtitle">${titleParts[1].trim()}</span>` : stage.title;
     descEl.innerHTML = stage.desc;
-    
-    inputEl.value = "";
-    messageEl.innerText = "";
-    messageEl.className = "";
-    hintBoxEl.classList.add('hidden');
-    
-    const bgImage = stage.bgClass ? `${stage.bgClass}.png` : `bg_stage${currentStageIndex + 1}.png`;
-    changeBackground(bgImage);
+    inputEl.value = ""; messageEl.innerText = ""; messageEl.className = ""; hintBoxEl.classList.add('hidden');
+    changeBackground(stage.bgClass ? `${stage.bgClass}.png` : `bg_stage${currentStageIndex + 1}.png`);
 }
 
-// 📸 AR 카메라 구동 함수
+// 📸 AR 카메라 가동 (Iframe에 주소 할당)
 function startARScan() {
     document.getElementById('main-ui').style.display = 'none';
     document.getElementById('ar-overlay').style.display = 'block';
-    
-    // 처음에 카메라가 켜질 때 화면 크기 조절을 위한 이벤트 발생
-    setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));
-    }, 500);
+    // 이 순간에만 카메라 방(scanner.html)을 로딩합니다.
+    document.getElementById('ar-iframe').src = "scanner.html";
 }
 
-// 📸 AR 카메라 종료 함수
+// 📸 AR 카메라 종료 (Iframe 주소 삭제 = 카메라 렌즈 완전히 꺼짐)
 function stopARScan() {
     document.getElementById('ar-overlay').style.display = 'none';
     document.getElementById('main-ui').style.display = 'flex';
+    document.getElementById('ar-iframe').src = ""; // 카메라 즉시 종료!
 }
 
 function checkAnswer() {
     const stage = gameData[currentStageIndex];
-    const userInput = inputEl.value.trim();
-
-    if (userInput === stage.answer) {
+    if (inputEl.value.trim() === stage.answer) {
         popupKeyword.innerText = `[핵심가치: ${stage.keyword}] 획득!`;
         popupText.innerHTML = stage.clearText;
         successPopup.classList.remove('hidden'); 
@@ -181,21 +145,6 @@ function checkAnswer() {
     }
 }
 
-function closePopupAndNext() {
-    successPopup.classList.add('hidden'); 
-    currentStageIndex++; 
-    loadStage(); 
-}
-
-function showHint() {
-    const stage = gameData[currentStageIndex];
-    hintBoxEl.innerText = `[AI 통제실 단서]: ${stage.hint}`;
-    hintBoxEl.classList.remove('hidden');
-}
-
-function showSacredEffect() {
-    const halo = document.createElement('div');
-    halo.className = 'sacred-halo animate-halo'; 
-    document.body.appendChild(halo);
-    setTimeout(() => { halo.remove(); }, 3000);
-}
+function closePopupAndNext() { successPopup.classList.add('hidden'); currentStageIndex++; loadStage(); }
+function showHint() { hintBoxEl.innerText = `[AI 통제실 단서]: ${gameData[currentStageIndex].hint}`; hintBoxEl.classList.remove('hidden'); }
+function showSacredEffect() { const halo = document.createElement('div'); halo.className = 'sacred-halo animate-halo'; document.body.appendChild(halo); setTimeout(() => { halo.remove(); }, 3000); }
