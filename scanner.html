@@ -15,7 +15,6 @@
     </a-scene>
 
     <script>
-        // 로고를 인식하면 부모 창(index.html)으로 성공 메시지(무전)를 보냅니다!
         window.addEventListener('nft-found', function() {
             window.parent.postMessage('AR_FOUND', '*');
         });
