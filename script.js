@@ -82,8 +82,7 @@ function loadStage() {
             : stage.title;
         descEl.innerHTML = stage.desc;
 
-        // 🔥 [절대 실패하지 않는 UI 숨김 코드]
-        // 정답 입력칸과 버튼을 감싸고 있는 전체 부모 박스를 추적해서 강제로 없앱니다.
+        // 🔥 UI 숨기기
         if (inputEl && inputEl.parentElement) {
             inputEl.parentElement.style.display = 'none'; 
         }
@@ -91,10 +90,8 @@ function loadStage() {
             hintBoxEl.style.display = 'none'; 
         }
 
-        // 💡 엔딩 페이지 투명도 극대화 
+        // 💡 투명도와 황금빛 효과는 이제 전적으로 CSS(.clear-mode)가 담당합니다!
         storyBox.classList.add('clear-mode');
-        storyBox.style.backgroundColor = "rgba(0, 0, 0, 0.2)"; 
-        storyBox.style.boxShadow = "none"; 
 
         const bgImage = stage.bgClass ? `${stage.bgClass}.png` : 'bg_clear.png';
         changeBackground(bgImage);
@@ -103,7 +100,7 @@ function loadStage() {
     }
 
     // 🌟 [일반 스테이지 로직]
-    storyBox.classList.remove('clear-mode');
+    storyBox.classList.remove('clear-mode'); // 일반 스테이지에서는 황금빛 제거
     
     // 숨겼던 UI 다시 살리기
     if (inputEl && inputEl.parentElement) {
@@ -112,10 +109,6 @@ function loadStage() {
     if (hintBoxEl) {
         hintBoxEl.style.display = ''; 
     }
-
-    // 박스 디자인 복구
-    storyBox.style.backgroundColor = ""; 
-    storyBox.style.boxShadow = "";
 
     const titleParts = stage.title.split(':');
     titleEl.innerHTML = titleParts.length > 1 
