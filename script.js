@@ -48,10 +48,10 @@ window.onload = function() {
     changeBackground('bg_intro.png');
     fetchGameData(); 
 
-    // 무전기 수신 대기: 격리실(scanner.html)에서 정답을 찾았다고 연락이 오면!
+    // 무전기 수신 대기 (AR 스캔 완료)
     window.addEventListener('message', function(event) {
         if (event.data === 'AR_FOUND') {
-            alert("🎉 설립자의 유산이 스캔되었습니다! 금고의 암호를 확인하세요.");
+            alert("🎉 설립자의 유산이 스캔되었습니다! 힌트를 확인하세요.");
             stopARScan(); 
         }
     });
@@ -91,7 +91,7 @@ function loadStage() {
     const arBtn = document.getElementById('ar-scan-btn');
     const stage = gameData[currentStageIndex];
 
-    // 🌟 [수정됨] 스테이지 5 (배열 인덱스 4)에서만 버튼 등장!
+    // 🌟 [핵심] 스테이지 5 (배열 인덱스 4)일 때만 버튼 노출!
     if (currentStageIndex === 4) {
         arBtn.classList.remove('hidden');
     } else {
@@ -124,14 +124,15 @@ function loadStage() {
 function startARScan() {
     document.getElementById('main-ui').style.display = 'none';
     document.getElementById('ar-overlay').style.display = 'block';
-    // 이 순간에 카메라 방(scanner.html)을 켭니다.
+    // 버튼을 누르는 순간 카메라 방을 엽니다.
     document.getElementById('ar-iframe').src = "scanner.html";
 }
 
 function stopARScan() {
     document.getElementById('ar-overlay').style.display = 'none';
     document.getElementById('main-ui').style.display = 'flex';
-    document.getElementById('ar-iframe').src = ""; 
+    // 스캔이 끝나면 빈 페이지로 돌려서 카메라를 완전히 끕니다.
+    document.getElementById('ar-iframe').src = "about:blank"; 
 }
 
 function checkAnswer() {
