@@ -4,20 +4,44 @@
     <meta charset="utf-8">
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-    <style> body { margin: 0; overflow: hidden; background-color: transparent; } </style>
+    <style> 
+        body { margin: 0; overflow: hidden; background-color: transparent; } 
+        /* 💡 추가됨: 화면 왼쪽 위에 로딩/인식 상태를 보여주는 알림창 */
+        #ar-status { position: absolute; top: 10px; left: 10px; color: #fff; background: rgba(0,0,0,0.7); padding: 8px 12px; font-weight: bold; z-index: 9999; border-radius: 4px; }
+    </style>
 </head>
 <body>
+    <div id="ar-status">⏳ 로고 데이터 불러오는 중... (최대 10초 대기)</div>
+    
     <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: true;" embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
-        <a-nft type="nft" url="./descriptors/logo" smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5" id="nft-marker">
-            <a-text value="SECRET CODE: FOUNDER" scale="50 50 50" position="0 0 0" color="#ffd700" align="center"></a-text>
+        
+        <a-nft id="target-marker" type="nft" url="./descriptors/logo" smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5">
+            <a-box position="0 50 0" scale="100 100 100" color="red"></a-box>
         </a-nft>
+        
         <a-entity camera></a-entity>
     </a-scene>
 
     <script>
-        window.addEventListener('nft-found', function() {
-            window.parent.postMessage('AR_FOUND', '*');
-        });
+        window.onload = function() {
+            const marker = document.getElementById('target-marker');
+            const statusBox = document.getElementById('ar-status');
+            
+            // 데이터 로딩이 완료되었을 때
+            marker.addEventListener('loaded', function () {
+                statusBox.innerText = "✅ 스캔 준비 완료! 로고를 비춰주세요.";
+                statusBox.style.color = "#4CAF50";
+            });
+
+            // 💡 핵심: 마커를 인식했을 때 (nft-found 대신 공식 규격인 markerFound 사용)
+            marker.addEventListener('markerFound', function() {
+                statusBox.innerText = "🎉 인식 성공! 무전 전송 중...";
+                statusBox.style.color = "#ffd700";
+                
+                // 본부(index.html)로 무전 발송!
+                window.parent.postMessage('AR_FOUND', '*');
+            });
+        };
     </script>
 </body>
 </html>
