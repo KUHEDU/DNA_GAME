@@ -2,12 +2,17 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>프로젝트: 최후의 백신</title>
+    
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="game-container">
+<body style="margin: 0; overflow: hidden;">
+    
+    <div class="game-container" id="main-ui">
         <div id="intro-screen">
             <h1 id="hospital-logo">🏥 건국대학교병원 : DNA를 사수하라</h1>
             <hr>
@@ -30,7 +35,7 @@
             </div>
             
             <div class="input-section">
-                <input type="text" id="mission-code-input" placeholder="미션코드를 입력하세요" autocomplete="off">
+                <input type="text" id="mission-code-input" placeholder="미션 시작 코드를 입력하세요 (예: 0303)" autocomplete="off">
             </div>
             <p id="mission-error-text" style="text-align: center; font-weight: bold; min-height: 20px; margin-top: 5px;"></p>
 
@@ -46,6 +51,10 @@
             <div class="story-box">
                 <p id="stage-desc">시스템을 불러오는 중입니다.</p>
             </div>
+
+            <button id="ar-scan-btn" class="full-btn hidden" onclick="startARScan()" style="background-color: #0550ae; margin-bottom: 15px; border: 2px solid #58a6ff;">
+                🔍 설립자의 흉상 스캔 가동
+            </button>
 
             <div class="input-section">
                 <input type="text" id="answer-input" placeholder="보안 코드를 입력하세요" autocomplete="off">
@@ -66,6 +75,19 @@
             <p id="popup-text"></p>
             <button onclick="closePopupAndNext()" class="full-btn" style="margin-top: 20px;">다음 구역으로 진입</button>
         </div>
+    </div>
+
+    <div id="ar-overlay">
+        <div class="ar-ui-top">설립자 흉상의 정면이 꽉 차도록 비추십시오</div>
+        <div class="scan-guide-box"></div>
+        <button class="ar-close-btn" onclick="stopARScan()">스캔 취소 및 돌아가기</button>
+        
+        <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: true;" embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
+            <a-nft type="nft" url="./descriptors/founder_bust" smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5" id="nft-marker">
+                <a-text value="SECRET CODE: FOUNDER" scale="50 50 50" position="0 0 0" color="#ffd700" align="center"></a-text>
+            </a-nft>
+            <a-entity camera></a-entity>
+        </a-scene>
     </div>
 
     <script src="script.js"></script>
