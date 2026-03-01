@@ -53,7 +53,7 @@
             </div>
 
             <button id="ar-scan-btn" class="full-btn hidden" onclick="startARScan()" style="background-color: #0550ae; margin-bottom: 15px; border: 2px solid #58a6ff;">
-                🔍 설립자의 흉상 스캔 가동
+                🔍 설립자의 유산 스캔 가동
             </button>
 
             <div class="input-section">
@@ -78,12 +78,14 @@
     </div>
 
     <div id="ar-overlay">
-        <div class="ar-ui-top">설립자 흉상의 정면이 꽉 차도록 비추십시오</div>
+        <div class="ar-ui-top">병원 로고가 화면에 꽉 차도록 비추십시오</div>
         <div class="scan-guide-box"></div>
         <button class="ar-close-btn" onclick="stopARScan()">스캔 취소 및 돌아가기</button>
         
         <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: true;" embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
-            <a-nft type="nft" url="./descriptors/founder_bust" smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5" id="nft-marker">
+            
+            <a-nft type="nft" url="./descriptors/logo" smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5" id="nft-marker">
+                
                 <a-text value="SECRET CODE: FOUNDER" scale="50 50 50" position="0 0 0" color="#ffd700" align="center"></a-text>
             </a-nft>
             <a-entity camera></a-entity>
