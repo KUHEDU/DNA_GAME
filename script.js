@@ -18,7 +18,7 @@ const popupText = document.getElementById('popup-text');
 let gameData = [];
 let currentStageIndex = 0;
 
-// 💡 구글 시트에서 데이터 불러오기 함수
+// 💡 구글 시트에서 데이터 불러오기
 async function fetchGameData() {
     try {
         const cacheBuster = `&t=${new Date().getTime()}`;
@@ -52,6 +52,14 @@ function changeBackground(imageName) {
 window.onload = function() {
     changeBackground('bg_intro.png');
     fetchGameData(); 
+
+    // AR 마커 인식 이벤트 리스너 등록
+    window.addEventListener('nft-found', function() {
+        alert("🎉 설립자의 유산이 스캔되었습니다! 힌트를 확인하세요.");
+        // 자동으로 입력칸에 어떤 단어를 채워줄 수도 있습니다.
+        // inputEl.value = "FOUNDER";
+        stopARScan();
+    });
 };
 
 function showWorldview() {
@@ -60,7 +68,7 @@ function showWorldview() {
     changeBackground('bg_default.png'); 
 }
 
-// 💡 미션 시작 전 암호를 확인하는 함수
+// 💡 미션 시작 전 암호를 확인하는 함수 (0303)
 function checkMissionCode() {
     if (gameData.length === 0) {
         alert("데이터를 불러오는 중입니다. 잠시만 기다려주세요.");
@@ -70,23 +78,17 @@ function checkMissionCode() {
     const inputCode = document.getElementById('mission-code-input').value.trim();
     const errorText = document.getElementById('mission-error-text');
 
-    // 시트의 첫 번째 줄(index 0)에 있는 missionCode 값을 가져옵니다. 
-    // 만약 시트에 아직 입력을 안 했다면 기본값으로 "0303"을 사용합니다.
     const requiredCode = gameData[0].missionCode ? gameData[0].missionCode.toString().trim() : "0303";
 
     if (inputCode === requiredCode) {
-        // 정답일 경우: 에러 메시지 지우고 게임 시작!
         errorText.innerText = "";
         startGame(); 
     } else {
-        // 오답일 경우: 경고 메시지 출력 및 흔들림 애니메이션
         errorText.innerText = "❌ 접근 거부: 잘못된 미션 코드입니다.";
         errorText.style.color = "#ff7b72";
         
         errorText.style.animation = "none";
-        setTimeout(() => { 
-            errorText.style.animation = "shake 0.3s"; 
-        }, 10);
+        setTimeout(() => { errorText.style.animation = "shake 0.3s"; }, 10);
     }
 }
 
@@ -98,7 +100,15 @@ function startGame() {
 
 function loadStage() {
     const storyBox = document.querySelector('.story-box');
+    const arBtn = document.getElementById('ar-scan-btn');
     const stage = gameData[currentStageIndex];
+
+    // 🌟 [추가] 4단계 (배열 인덱스 3)일 때만 AR 스캔 버튼 보이기
+    if (currentStageIndex === 3) {
+        arBtn.classList.remove('hidden');
+    } else {
+        arBtn.classList.add('hidden');
+    }
 
     // 🌟 [엔딩 로직] 마지막 행일 때
     if (currentStageIndex === gameData.length - 1) {
@@ -108,15 +118,9 @@ function loadStage() {
             : stage.title;
         descEl.innerHTML = stage.desc;
 
-        // 🔥 UI 숨기기
-        if (inputEl && inputEl.parentElement) {
-            inputEl.parentElement.style.display = 'none'; 
-        }
-        if (hintBoxEl) {
-            hintBoxEl.style.display = 'none'; 
-        }
+        if (inputEl && inputEl.parentElement) inputEl.parentElement.style.display = 'none'; 
+        if (hintBoxEl) hintBoxEl.style.display = 'none'; 
 
-        // 투명도와 황금빛 효과 CSS 클래스 적용
         storyBox.classList.add('clear-mode');
 
         const bgImage = stage.bgClass ? `${stage.bgClass}.png` : 'bg_clear.png';
@@ -126,15 +130,10 @@ function loadStage() {
     }
 
     // 🌟 [일반 스테이지 로직]
-    storyBox.classList.remove('clear-mode'); // 황금빛 효과 제거
+    storyBox.classList.remove('clear-mode'); 
     
-    // 숨겼던 UI 다시 살리기
-    if (inputEl && inputEl.parentElement) {
-        inputEl.parentElement.style.display = 'flex'; 
-    }
-    if (hintBoxEl) {
-        hintBoxEl.style.display = ''; 
-    }
+    if (inputEl && inputEl.parentElement) inputEl.parentElement.style.display = 'flex'; 
+    if (hintBoxEl) hintBoxEl.style.display = ''; 
 
     const titleParts = stage.title.split(':');
     titleEl.innerHTML = titleParts.length > 1 
@@ -149,6 +148,23 @@ function loadStage() {
     
     const bgImage = stage.bgClass ? `${stage.bgClass}.png` : `bg_stage${currentStageIndex + 1}.png`;
     changeBackground(bgImage);
+}
+
+// 📸 AR 카메라 구동 함수
+function startARScan() {
+    document.getElementById('main-ui').style.display = 'none';
+    document.getElementById('ar-overlay').style.display = 'block';
+    
+    // 처음에 카메라가 켜질 때 화면 크기 조절을 위한 이벤트 발생
+    setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+    }, 500);
+}
+
+// 📸 AR 카메라 종료 함수
+function stopARScan() {
+    document.getElementById('ar-overlay').style.display = 'none';
+    document.getElementById('main-ui').style.display = 'flex';
 }
 
 function checkAnswer() {
