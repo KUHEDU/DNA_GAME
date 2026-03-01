@@ -18,7 +18,7 @@ const popupText = document.getElementById('popup-text');
 let gameData = [];
 let currentStageIndex = 0;
 
-// 💡 구글 시트에서 데이터 불러오기 함수 (캐시 방지 로직 포함)
+// 💡 구글 시트에서 데이터 불러오기 함수
 async function fetchGameData() {
     try {
         const cacheBuster = `&t=${new Date().getTime()}`;
@@ -60,11 +60,37 @@ function showWorldview() {
     changeBackground('bg_default.png'); 
 }
 
-function startGame() {
+// 💡 미션 시작 전 암호를 확인하는 함수
+function checkMissionCode() {
     if (gameData.length === 0) {
-        alert("데이터를 불러오는 중입니다. 1~2초 후 다시 눌러주세요.");
+        alert("데이터를 불러오는 중입니다. 잠시만 기다려주세요.");
         return;
     }
+
+    const inputCode = document.getElementById('mission-code-input').value.trim();
+    const errorText = document.getElementById('mission-error-text');
+
+    // 시트의 첫 번째 줄(index 0)에 있는 missionCode 값을 가져옵니다. 
+    // 만약 시트에 아직 입력을 안 했다면 기본값으로 "0303"을 사용합니다.
+    const requiredCode = gameData[0].missionCode ? gameData[0].missionCode.toString().trim() : "0303";
+
+    if (inputCode === requiredCode) {
+        // 정답일 경우: 에러 메시지 지우고 게임 시작!
+        errorText.innerText = "";
+        startGame(); 
+    } else {
+        // 오답일 경우: 경고 메시지 출력 및 흔들림 애니메이션
+        errorText.innerText = "❌ 접근 거부: 잘못된 미션 코드입니다.";
+        errorText.style.color = "#ff7b72";
+        
+        errorText.style.animation = "none";
+        setTimeout(() => { 
+            errorText.style.animation = "shake 0.3s"; 
+        }, 10);
+    }
+}
+
+function startGame() {
     worldviewScreen.classList.add('hidden');
     gameScreen.classList.remove('hidden');
     loadStage();
@@ -90,7 +116,7 @@ function loadStage() {
             hintBoxEl.style.display = 'none'; 
         }
 
-        // 💡 투명도와 황금빛 효과는 이제 전적으로 CSS(.clear-mode)가 담당합니다!
+        // 투명도와 황금빛 효과 CSS 클래스 적용
         storyBox.classList.add('clear-mode');
 
         const bgImage = stage.bgClass ? `${stage.bgClass}.png` : 'bg_clear.png';
@@ -100,7 +126,7 @@ function loadStage() {
     }
 
     // 🌟 [일반 스테이지 로직]
-    storyBox.classList.remove('clear-mode'); // 일반 스테이지에서는 황금빛 제거
+    storyBox.classList.remove('clear-mode'); // 황금빛 효과 제거
     
     // 숨겼던 UI 다시 살리기
     if (inputEl && inputEl.parentElement) {
