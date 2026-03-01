@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <style> body { margin: 0; overflow: hidden; background-color: transparent; } </style>
+</head>
+<body>
+    <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: true;" embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
+        <a-nft type="nft" url="./descriptors/logo" smooth="true" smoothCount="10" smoothTolerance=".01" smoothThreshold="5" id="nft-marker">
+            <a-text value="SECRET CODE: FOUNDER" scale="50 50 50" position="0 0 0" color="#ffd700" align="center"></a-text>
+        </a-nft>
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        // 로고를 인식하면 부모 창(index.html)으로 성공 메시지(무전)를 보냅니다!
+        window.addEventListener('nft-found', function() {
+            window.parent.postMessage('AR_FOUND', '*');
+        });
+    </script>
+</body>
+</html>
