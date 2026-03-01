@@ -23,13 +23,12 @@ body {
 
 /* 게임 컨테이너 (바깥 상자) */
 .game-container {
-    width: 88%; /* PC 화면에서도 양옆 여백을 살짝 늘림 */
+    width: 88%; 
     max-width: 500px;
     margin: auto; 
     
-    /* 🔥 전체 상자의 투명도를 높여(0.85 -> 0.65) 배경이 은은하게 비치도록 수정 */
     background-color: rgba(22, 27, 34, 0.5);
-    backdrop-filter: blur(3px); /* 배경 블러를 줄여서 배경 이미지가 더 또렷하게 보이게 함 */
+    backdrop-filter: blur(3px); 
     -webkit-backdrop-filter: blur(3px);
     
     padding: 25px;
@@ -44,7 +43,6 @@ body {
 h1, h2 { text-align: center; }
 #hospital-logo { color: #2ea043; font-size: 1.2rem; margin-top: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-/* 스테이지 제목 (두 줄 분리 및 강조) */
 #stage-title { 
     color: #8b949e; 
     font-size: 0.95rem; 
@@ -65,10 +63,27 @@ h1, h2 { text-align: center; }
 hr { border: 0.5px solid #444c56; margin: 15px 0; }
 
 /* ==========================================
+   🏥 [애니메이션 정의] 황금빛 숨쉬기 효과 (위로 끌어올림)
+   ========================================== */
+@keyframes goldenGlow {
+    0% {
+        border-color: #ffd700;
+        box-shadow: 0 0 5px rgba(255, 215, 0, 0.6), inset 0 0 5px rgba(255, 215, 0, 0.4);
+    }
+    50% {
+        border-color: #fff3b0;
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.9), inset 0 0 10px rgba(255, 215, 0, 0.6);
+    }
+    100% {
+        border-color: #ffd700;
+        box-shadow: 0 0 5px rgba(255, 215, 0, 0.6), inset 0 0 5px rgba(255, 215, 0, 0.4);
+    }
+}
+
+/* ==========================================
    🌟 스토리 박스 (안쪽 텍스트 상자) 
    ========================================== */
 .story-box {
-    /* 🔥 텍스트 상자의 투명도도 높임 (0.5 -> 0.35) */
     background-color: rgba(0, 0, 0, 0.2);
     padding: 18px;
     border-left: 4px solid #4CAF50;
@@ -81,25 +96,25 @@ hr { border: 0.5px solid #444c56; margin: 15px 0; }
     text-align: left;
     font-size: 0.95rem;
     color: #c9d1d9; 
-    transition: all 0.5s ease; /* 투명도 변화 부드럽게 */
+    transition: all 0.5s ease; 
 }
 
-/* 🌟 [엔딩 페이지용] 황금빛으로 빛나는 글래스모피즘 스타일 */
+/* 🌟 [엔딩 페이지용] 황금빛 글래스모피즘 스타일 */
 .story-box.clear-mode {
-    background-color: rgba(0, 0, 0, 0.1) !important; /* 아주 투명하게 유지 */
-    backdrop-filter: blur(3px) !important; /* 배경 이미지가 살짝 비치되 텍스트 가독성 확보 */
+    background-color: rgba(0, 0, 0, 0.1) !important; 
+    backdrop-filter: blur(3px) !important; 
+    
+    /* 기존 테두리 흔적 제거 */
+    border-left: none !important; 
     
     /* 🔥 황금빛 외곽선 효과 추가 */
-    border: 2px solid #ffd700 !important; /* 전체 외곽선을 황금색으로 변경 */
-    border-radius: 8px; /* 테두리를 조금 더 둥글게 만들어 부드러운 느낌 강조 */
+    border: 2px solid #ffd700 !important; 
+    border-radius: 8px; 
     
-    /* 🔥 빛나는 애니메이션 적용 (아래 2단계에서 정의할 애니메이션 이름) */
-    /* 2초 동안, 부드럽게 시작하고 끝나며(ease-in-out), 무한히 반복(infinite) */
+    /* 🔥 빛나는 애니메이션 적용 */
     animation: goldenGlow 2s infinite ease-in-out; 
-    
-    /* 초록색 테두리 흔적 제거 */
-    border-left: none !important; 
 }
+
 /* 핵심 키워드 하이라이트 효과 */
 .highlight-item {
     color: #ffd700; 
@@ -217,41 +232,14 @@ input[type="text"]:focus { outline: none; border-color: #58a6ff; }
 }
 
 /* ==========================================
-   📱 모바일 디바이스 최적화 (이 부분이 핵심!)
+   📱 모바일 디바이스 최적화 (항상 맨 아래에 위치해야 함!)
    ========================================== */
 @media (max-width: 480px) {
-    /* 🔥 width를 92% -> 82%로 줄여 양옆으로 배경화면이 시원하게 보이도록 수정 */
+    /* width를 75%로 줄여 양옆으로 배경화면이 시원하게 보이도록 수정 */
     .game-container { width: 75%; padding: 20px 15px; }
     #hospital-logo { font-size: 1.1rem; }
     #stage-title { font-size: 0.85rem; }
     .stage-subtitle { font-size: 1.25rem; }
     .story-box { padding: 15px; max-height: 350px; }
     button { padding: 10px; font-size: 0.95rem; }
-}
-
-/* ==========================================
-   🏥 [애니메이션 정의] 황금빛 숨쉬기 효과
-   ========================================== */
-@keyframes goldenGlow {
-    /* 애니메이션 시작점 (0%) */
-    0% {
-        /* 테두리 색상: 진한 황금색 */
-        border-color: #ffd700;
-        /* 은은한 외부 광채와 내부 광채 (rgba의 마지막 0.6이 투명도) */
-        box-shadow: 0 0 5px rgba(255, 215, 0, 0.6), inset 0 0 5px rgba(255, 215, 0, 0.4);
-    }
-    
-    /* 애니메이션 중간점 (50%) - 가장 밝게 빛남 */
-    50% {
-        /* 테두리 색상: 밝은 노란색(빛나는 느낌) */
-        border-color: #fff3b0;
-        /* 광채를 더 넓고(20px) 진하게(0.9) 확산 */
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.9), inset 0 0 10px rgba(255, 215, 0, 0.6);
-    }
-    
-    /* 애니메이션 끝점 (100%) - 다시 은은하게 (0%와 동일하게 설정하여 부드럽게 연결) */
-    100% {
-        border-color: #ffd700;
-        box-shadow: 0 0 5px rgba(255, 215, 0, 0.6), inset 0 0 5px rgba(255, 215, 0, 0.4);
-    }
 }
