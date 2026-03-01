@@ -21,15 +21,16 @@ body {
     transition: background-image 0.8s ease-in-out;
 }
 
-/* 게임 컨테이너 */
+/* 게임 컨테이너 (바깥 상자) */
 .game-container {
-    width: 90%;
+    width: 88%; /* PC 화면에서도 양옆 여백을 살짝 늘림 */
     max-width: 500px;
     margin: auto; 
     
-    background-color: rgba(22, 27, 34, 0.85);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    /* 🔥 전체 상자의 투명도를 높여(0.85 -> 0.65) 배경이 은은하게 비치도록 수정 */
+    background-color: rgba(22, 27, 34, 0.65);
+    backdrop-filter: blur(5px); /* 배경 블러를 줄여서 배경 이미지가 더 또렷하게 보이게 함 */
+    -webkit-backdrop-filter: blur(5px);
     
     padding: 25px;
     border-radius: 12px;
@@ -64,10 +65,11 @@ h1, h2 { text-align: center; }
 hr { border: 0.5px solid #444c56; margin: 15px 0; }
 
 /* ==========================================
-   🌟 스토리 박스 
+   🌟 스토리 박스 (안쪽 텍스트 상자) 
    ========================================== */
 .story-box {
-    background-color: rgba(0, 0, 0, 0.5);
+    /* 🔥 텍스트 상자의 투명도도 높임 (0.5 -> 0.35) */
+    background-color: rgba(0, 0, 0, 0.35);
     padding: 18px;
     border-left: 4px solid #4CAF50;
     margin-bottom: 25px;
@@ -82,11 +84,11 @@ hr { border: 0.5px solid #444c56; margin: 15px 0; }
     transition: all 0.5s ease; /* 투명도 변화 부드럽게 */
 }
 
-/* 🌟 [추가] 마지막 클리어 페이지용 투명도 높은 스타일 */
+/* 🌟 [엔딩 페이지용] 가장 투명한 스타일 */
 .story-box.clear-mode {
-    background-color: rgba(0, 0, 0, 0.2) !important; /* 배경을 아주 투명하게 */
-    backdrop-filter: blur(2px) !important; /* 블러도 최소화하여 배경 감상 */
-    border-left: 4px solid rgba(76, 175, 80, 0.5); /* 테두리도 약간 투명하게 */
+    background-color: rgba(0, 0, 0, 0.1) !important; /* 거의 완전 투명하게 */
+    backdrop-filter: blur(2px) !important; 
+    border-left: 4px solid rgba(76, 175, 80, 0.5); 
 }
 
 /* 핵심 키워드 하이라이트 효과 */
@@ -205,9 +207,12 @@ input[type="text"]:focus { outline: none; border-color: #58a6ff; }
     100% { transform: translate(-50%, -50%) scale(15); opacity: 0; }
 }
 
-/* 모바일 디바이스 최적화 */
+/* ==========================================
+   📱 모바일 디바이스 최적화 (이 부분이 핵심!)
+   ========================================== */
 @media (max-width: 480px) {
-    .game-container { width: 92%; padding: 20px 15px; }
+    /* 🔥 width를 92% -> 82%로 줄여 양옆으로 배경화면이 시원하게 보이도록 수정 */
+    .game-container { width: 82%; padding: 20px 15px; }
     #hospital-logo { font-size: 1.1rem; }
     #stage-title { font-size: 0.85rem; }
     .stage-subtitle { font-size: 1.25rem; }
