@@ -48,11 +48,11 @@ window.onload = function() {
     changeBackground('bg_intro.png');
     fetchGameData(); 
 
-    // 💡 무전기 수신 대기: 격리실(scanner.html)에서 정답을 찾았다고 연락이 오면!
+    // 무전기 수신 대기: 격리실(scanner.html)에서 정답을 찾았다고 연락이 오면!
     window.addEventListener('message', function(event) {
         if (event.data === 'AR_FOUND') {
-            alert("🎉 설립자의 유산이 스캔되었습니다! 힌트를 확인하세요.");
-            stopARScan(); // 카메라 방을 부숴서 완전히 끕니다.
+            alert("🎉 설립자의 유산이 스캔되었습니다! 금고의 암호를 확인하세요.");
+            stopARScan(); 
         }
     });
 };
@@ -91,9 +91,12 @@ function loadStage() {
     const arBtn = document.getElementById('ar-scan-btn');
     const stage = gameData[currentStageIndex];
 
-    // 🌟 4단계(배열 3)에서만 버튼 등장
-    if (currentStageIndex === 3) arBtn.classList.remove('hidden');
-    else arBtn.classList.add('hidden');
+    // 🌟 [수정됨] 스테이지 5 (배열 인덱스 4)에서만 버튼 등장!
+    if (currentStageIndex === 4) {
+        arBtn.classList.remove('hidden');
+    } else {
+        arBtn.classList.add('hidden');
+    }
 
     if (currentStageIndex === gameData.length - 1) {
         const titleParts = stage.title.split(':');
@@ -118,19 +121,17 @@ function loadStage() {
     changeBackground(stage.bgClass ? `${stage.bgClass}.png` : `bg_stage${currentStageIndex + 1}.png`);
 }
 
-// 📸 AR 카메라 가동 (Iframe에 주소 할당)
 function startARScan() {
     document.getElementById('main-ui').style.display = 'none';
     document.getElementById('ar-overlay').style.display = 'block';
-    // 이 순간에만 카메라 방(scanner.html)을 로딩합니다.
+    // 이 순간에 카메라 방(scanner.html)을 켭니다.
     document.getElementById('ar-iframe').src = "scanner.html";
 }
 
-// 📸 AR 카메라 종료 (Iframe 주소 삭제 = 카메라 렌즈 완전히 꺼짐)
 function stopARScan() {
     document.getElementById('ar-overlay').style.display = 'none';
     document.getElementById('main-ui').style.display = 'flex';
-    document.getElementById('ar-iframe').src = ""; // 카메라 즉시 종료!
+    document.getElementById('ar-iframe').src = ""; 
 }
 
 function checkAnswer() {
