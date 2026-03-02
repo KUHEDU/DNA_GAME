@@ -184,9 +184,17 @@ input[type="text"]:focus { outline: none; border-color: #58a6ff; }
     z-index: 100;
 }
 .popup-content {
-    background: #ffffff; color: #111;
-    padding: 25px; border-radius: 12px;
-    width: 85%; max-width: 350px; text-align: center;
+    background: #ffffff; 
+    color: #111;
+    padding: 20px; /* 안쪽 여백을 살짝 줄여서 밸런스 맞춤 */
+    border-radius: 12px;
+    
+    /* 💡 여기가 핵심 다이어트 구간입니다 */
+    width: 75%; /* 화면의 85% 차지하던 것을 75%로 줄여 양옆 여백 확보 */
+    max-width: 300px; /* 최대 크기도 350px에서 300px로 축소 */
+    box-sizing: border-box; /* 패딩이 너비를 뚫고 나가지 않게 꽉 잡아줌 */
+    
+    text-align: center;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
 }
 #popup-title { color: #238636; margin-top: 0; font-size: 1.3rem;}
